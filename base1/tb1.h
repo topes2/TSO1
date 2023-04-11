@@ -1,6 +1,6 @@
 typedef struct process{
     int state;
-    int cputime;    
+    int time; 
 }process;
 
 typedef struct program{
