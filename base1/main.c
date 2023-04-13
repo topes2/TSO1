@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
-{   
+void main(){
+
     //Ficheiros
     char fileName[20] = "in.txt";
     FILE *f;
@@ -11,16 +11,37 @@ int main()
 
     if(f == NULL){
         printf("File %s not found!\n", fileName);
-        return 1;
+        //return 1; temos de usar error catching aqui mas pronto
     }
 
-    //leitura dos dados (0 - nº de programas, 1 - nº de )
+    //leitura dos dados (0 - nº de programas, 1 - nº de processos )
     int sizes[2];
     fscanf(f, "%d", &sizes[0]);
     fscanf(f, "%d", &sizes[1]);
+    struct program *s = malloc(sizeof(struct program) + sizes[1] * sizeof(ptime));
+
+    program programas[sizes[0]]; // criar um array para guardar os programas a correr, talvez usar queues ou listas para isto mais tarde
+    
+    int value;
+    int p = 0;
+
+    for (int i = 0; i < sizes[0]; i++) {
+    int p = 0;
+    for (int j = 0; j < sizes[1]; j++) {
+        if (j % 2 == 0) {
+            fscanf(f, "%d", &programas[i].pl[p].type);
+        } else {
+            fscanf(f, "%d", &programas[i].pl[p].time);
+            p++;
+        }
+    }
+    }
+    
+
 
     
-    //Criação da matriz para guardar os valores
+    //Criação da matriz para guardar os valores   vou comentar isto so para tentar usar bi dimensional arrays 
+    /*
     int programs[sizes[0]][sizes[1]], value;
 
     for(int i = 0; i < sizes[0]; i++){
@@ -28,23 +49,8 @@ int main()
             fscanf(f, "%d", &programs[i][j]);
         }
     }
+    */
 
     fclose(f);
 
-    /*
-    struct program p1;
-    struct program p2;
-    struct program p3;
-    p1.size = p2.size = p3.size = 8;
-    int np[8] = {5, 8, 6, 4, 7, 5, 9, 10};
-    int np1[8] = {5, 8, 6, 4, 7, 5, 9, 10};
-    int np2[8] = {5, 8, 6, 4, 7, 5, 9, 10};
-    p1 = setup(p1, np);
-    p2 = setup(p2, np1);
-    p3 = setup(p3, np2);
-    // pp(p1);
-    printf("\n\n\n");
-    */
-
-    return 0;
 }

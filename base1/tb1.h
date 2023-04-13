@@ -1,19 +1,38 @@
-typedef struct process{
-    int state;
-    int time; 
-}process;
+#include <stdbool.h>
+
+#define true 1
+#define false 0
+
+
+
+typedef struct ptime
+{
+    int type; // 0 é running e 1 é blocked
+    int time;
+} ptime;
 
 typedef struct program{
-    process plist[8];
-    int size;
+    int sz;
+    ptime pl[];
 }program;
 
-//Debug
-void printp(program p);
 
-//Final
-program setup(program p1, int n[8]);
 
-void pp(program p);
 
-char ps(int i);
+
+//typedef struct programe   wtf esta a dar erro com comentario?
+//{
+//    int *Ar;
+//    int *Ab;
+//} programe;//pid =!= PiD
+
+
+
+
+//pid = o processo
+//PiD = id do program pertence
+
+//void importFile(char fileName[20], *mat);
+
+int check(int p[],int sz);
+int getsize(int p[]);
