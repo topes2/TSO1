@@ -21,7 +21,7 @@ void main(){
     struct program *s = malloc(sizeof(struct program) + sizes[1] * sizeof(ptime));
 
     program programas[sizes[0]]; // criar um array para guardar os programas a correr, talvez usar queues ou listas para isto mais tarde
-    
+    programas->sz[sizes[1]];
     int value;
     int p = 0;
 
@@ -29,13 +29,17 @@ void main(){
     int p = 0;
     for (int j = 0; j < sizes[1]; j++) {
         if (j % 2 == 0) {
-            fscanf(f, "%d", &programas[i].pl[p].type);
+            fscanf(f, "%d", &programas[i].pl[p].time);
+            programas[i].pl[p].type = 0;
         } else {
             fscanf(f, "%d", &programas[i].pl[p].time);
+            programas[i].pl[p].type = 1;
             p++;
         }
     }
     }
+
+    printf("Don't call it a debug");
     
 
 

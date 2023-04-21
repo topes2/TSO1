@@ -35,4 +35,6 @@ typedef struct program{
 //void importFile(char fileName[20], *mat);
 
 int check(int p[],int sz);
-int getsize(int p[]);
+int getsize(program p[]);
+
+void setsize(program p,int size);

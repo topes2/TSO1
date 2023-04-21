@@ -4,7 +4,6 @@
 
 #define READY 0;
 #define RUN 1;
-#define SIZE 8;
 
 int check(int p[],int sz){ // ver se ha algum valor de tempo inferior a 0
     for(int i = 0; i <= sz;i++){
@@ -15,8 +14,13 @@ int check(int p[],int sz){ // ver se ha algum valor de tempo inferior a 0
 }
 
 
+void setsize(program p,int size){
+    for(int i;i <= size;i++){
+        
 
+    }
+}
 
-int getsize(int p[]){ //em caso de nao sabermos o tamanho
+int getsize(program p[]){ //em caso de nao sabermos o tamanho
     return (sizeof(p) / sizeof(int));
 }
