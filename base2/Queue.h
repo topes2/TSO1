@@ -9,5 +9,6 @@ int IsFullQueue( Queue Q );
 void MakeEmptyQueue( Queue Q );
 
 int Front( Queue Q );
+int NextX(Queue Q,int n);
 void Enqueue( int X, Queue Q );
 int Dequeue( Queue Q );

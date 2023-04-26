@@ -56,6 +56,14 @@ Queue CreateQueue(int MaxElements)
     return Q;
 }
 
+int NextX(Queue Q,int n){ //adicionei esta funçao para saber quais programas correr
+    if(IsEmptyQueue(Q)){
+        return -1;
+    } else {
+        return (Q->Array[Q->Front]+ n);
+    }
+}
+
 void DisposeQueue(Queue Q)
 {
     if (Q != NULL)
@@ -104,7 +112,7 @@ void Enqueue(int X, Queue Q)
 int Front(Queue Q)
 {
     if(IsEmptyQueue(Q)){
-        printf("The queue is Empty\n");
+        //printf("The queue is Empty\n");
         exit(-1);
     } else {
         return Q->Array[Q->Front];
