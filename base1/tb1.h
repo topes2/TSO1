@@ -20,15 +20,6 @@ typedef struct program{
 
 
 
-//typedef struct programe   wtf esta a dar erro com comentario?
-//{
-//    int *Ar;
-//    int *Ab;
-//} programe;//pid =!= PiD
-
-
-
-
 //pid = o processo
 //PiD = id do program pertence
 

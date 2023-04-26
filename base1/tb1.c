@@ -12,15 +12,3 @@ int check(int p[],int sz){ // ver se ha algum valor de tempo inferior a 0
     }
     return 0;
 }
-
-
-void setsize(program p,int size){
-    for(int i;i <= size;i++){
-        
-
-    }
-}
-
-int getsize(program p[]){ //em caso de nao sabermos o tamanho
-    return (sizeof(p) / sizeof(int));
-}

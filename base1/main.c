@@ -3,7 +3,6 @@
 #include <stdlib.h>
 
 void main(){
-
     //Ficheiros
     char fileName[20] = "in.txt";
     FILE *f;
@@ -21,7 +20,7 @@ void main(){
     struct program *s = malloc(sizeof(struct program) + sizes[1] * sizeof(ptime));
 
     program programas[sizes[0]]; // criar um array para guardar os programas a correr, talvez usar queues ou listas para isto mais tarde
-    programas->sz[sizes[1]];
+    programas->sz = sizes[1];
     int value;
     int p = 0;
 
@@ -40,20 +39,6 @@ void main(){
     }
 
     printf("Don't call it a debug");
-    
-
-
-    
-    //Criação da matriz para guardar os valores   vou comentar isto so para tentar usar bi dimensional arrays 
-    /*
-    int programs[sizes[0]][sizes[1]], value;
-
-    for(int i = 0; i < sizes[0]; i++){
-        for(int j = 0; j < sizes[1]; j++){
-            fscanf(f, "%d", &programs[i][j]);
-        }
-    }
-    */
 
     fclose(f);
 
