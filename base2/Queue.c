@@ -113,7 +113,7 @@ int Front(Queue Q)
 {
     if(IsEmptyQueue(Q)){
         //printf("The queue is Empty\n");
-        exit(-1);
+        //exit(-1);
     } else {
         return Q->Array[Q->Front];
     }
