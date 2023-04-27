@@ -67,7 +67,7 @@ void main(){
                             Enqueue(Dequeue(new),ready);
                         }
 
-                if(0){
+                if(0){//n corre a seguir disto
                 
                 if(Front(running) == i){
                     printf("running \n");
