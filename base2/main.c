@@ -1,26 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Queue.h"
+#include "funcs.h"
 
 /*TODO
-tudo o que esta o new tem de ir para o ready
+linha 52
 INPUTS
 CONDIÇÃO DE FIM
 OUTPUT
 */
 
-/*Problemas
-o loop esta a correr sempre para tentar por no ready
-and legit nao é suposto fazer lo :(
-
-
-*/
-
 void main(){
-    int programas[2][8] = { 
-    {0, 6, 9, 3, 3, 4, 0, 0 },
-    {1, 7, 2, 4, 1, 2, 0, 0 } };   //0
-
+    int programas[3][8] = { 
+    {0, 3, 9, 3, 3, 4, 0, 0 }, //0 +5 
+    {1, 0, 2, 4, 1, 2, 0, 0 } ,
+    {3, 2, 9, 3, 3, 4, 0, 0 }};   //1 +5
+    
     //estados = NEW --> READY --> RUNNING -->programas[p1][0] == tickBLOCKED -->EXIT
     int tick = -1; // a instancia inicial que comeca em 0
     int qpr = sizeof(programas)/sizeof(programas[0]); //quantidade de programas
@@ -34,82 +29,89 @@ void main(){
     Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
 
-
-
-    while(tick < 5){
+    while(tick < 10){
         tick++; 
         printf("start while loop \n"); 
-        printf("%d tick \n",tick);
+        printf("%d tick \n", tick);
 
-        for(int p1 = 0;p1 <= qpr-1;p1++){ //verificar se o programa é suposto começar neste tick
+        for(int p1 = 0; p1 < qpr; p1++){ //verificar se o programa é suposto começar neste tick
             if(programas[p1][0] == tick){ //se sim entao vai para new
-                Enqueue(p1,new);
-                printf("enqueued a program into new\n");
+                Enqueue(p1 + 5, new); //New
+                printQueue(new);
             }
         }
-    
-            for(int i = 0;i <= qpr-1;i++){ //encontrar o tempo de processo que esta a ser testado, ignorando o primeiro (primeira instancia e os a -1)
-                int cpt = 1;
-                while(programas[i][cpt] == -1){
-                    cpt++;                 //current process timer
-                }
-                printf("started the for loop program n %d \n",i);
-                
-                
-                if((Front(new) == i) && (programas[i][0] =! tick)){//tudo o que esta o new tem de ir para o ready
-                    printf("trying to take from new to put to ready\n");
-                    if(programas[i][0] == tick)
-                        break;    
-                    }else if(IsEmptyQueue(running) && IsEmptyQueue(ready) && (programas[i][1] =! 0)){
-                            programas[i][cpt] += tick; //adding the tick so that we can subtract it 
-                            Enqueue(Dequeue(new),running);
-                        }else if(!(IsEmptyQueue(running))){
-                            Enqueue(Dequeue(new),ready);
-                        }
 
-                if(0){//n corre a seguir disto
+
+            for(int i0 = 0; i0 < qpr; i0++){ //encontrar o tempo de processo que esta a ser testado, ignorando o primeiro (primeira instancia e os a -1)
+                int i = i0; //O i e otimizado para o void
+
+                if(programas[i][0] < tick){
+
+                    int cpt = 1; //add check para ver se acabou de entrar algo como comparar tick de entrada com o tick atual
+                    while(programas[i][cpt] == -1){
+                        cpt++;                 //current process timer
+                    }
+                    
+                    int cptt = cpt; //optimizado para o void
+
                 
-                if(Front(running) == i){
-                    printf("running \n");
-                    if(programas[i][cpt] - tick > 0){
-                        break;
-                    }else if(programas[i][cpt] - tick <= 0){
+                if(Front(new) - 5 == i){//tudo o que esta o new tem de ir para o ready                  
+                    if(IsEmptyQueue(running) && IsEmptyQueue(ready) && (programas[i][1] != 0)){
+                        programas[i][cpt] = programas[i][cpt] + tick; //adding the tick so that we can subtract it   
+                        Enqueue(Dequeue(new),running);
+                       
+                    }else 
+                        Enqueue(Dequeue(new), ready);
+                }
+                
+                if(Front(running) - 5 == i){
+                    if(programas[i][cpt] - tick == 0){
                         programas[i][cpt] = -1;
                         programas[i][cpt+1] += tick;
-                        Enqueue(Dequeue(running),blocked);
-                        break;
+                        Enqueue(Dequeue(running), blocked);
                     }
+                }
+                           
+
+                if (Front(ready) - 5 == i){
+                    int cpt1 = 1;
+                    while(programas[Front(running) - 5][cpt1] == -1){ //encontrar o cpt do programa a correr no running
+                            cpt1++;
+                    } 
+                    if( ((programas[Front(running) - 5][cpt1] - tick == 0) || IsEmptyQueue(running)) && (programas[i][cpt] > 0) && (cpt % 2 != 0)){ 
+                        //ver se o current running é para sair ou nao ou se o running esta vazio e o tempo de correr no running é maior que 0 e que é o tempo de running que estamos a ver
+                        programas[i][cpt] += tick; //add o tick atual ao tempo do running 
+                        Enqueue(Dequeue(ready), running); //fazer enqueue para a running 
+                    }else if( (programas[i][cpt] == 0) && (cpt % 2 != 0)){
+                        //ou o tempo de running é 0 ou estamos a ver o tempo de blocked
+                        programas[i][cpt] = -1;
+                        programas[i][cpt+1] += tick;
+                        Enqueue(Dequeue(ready), blocked);
+                    }else if(cpt % 2 == 0){
+                        programas[i][cpt] += tick;
+                        Enqueue(Dequeue(ready), blocked);
+
+                    }
+                }
+                           
+                if(Front(blocked) - 5 == i){
+                    if(programas[i][cpt] - tick == 0){
+                        Enqueue(Dequeue(blocked), ready);
+                    } 
                 }
 
-                if (Front(ready) == i){
-                    printf("ready \n");
-                    int cpt1 = 1;
-                    for(int i = 0;i <= qp-1;i++){//encontrar e saber se é para mudar o programa actualmente a run
-                        while(programas[Front(running)][cpt1] == -1){
-                            cpt1++;                
-                        }
-                        if(programas[Front(running)][cpt1] - tick <= 0 && (programas[i][cpt+1] =! 0)){
-                            programas[i][cpt] += tick;
-                            Enqueue(Dequeue(ready),running);
-                            break;
-                        }else if(programas[i][cpt+1] == 0){
-                            Enqueue(Dequeue(ready),blocked);
-                            break;
-                        }
-                    }
+
+
                 }
-                
-                if(Front(blocked) == i){
-                    printf("blocked\n");
-                    if(programas[i][cpt] - tick <= 0){
-                        Enqueue(Dequeue(blocked),ready);
-                        break;
-                    } 
-                }   
-                }//debug
             }//for(programas)
-            
-    
+        printf("New \n");
+        printQueue(new);
+        printf("Running \n");
+        printQueue(running);
+        printf("Ready \n");
+        printQueue(ready);
+        printf("Blocked \n");
+        printQueue(blocked);
         printf("\n");   
     }//while   
 }//main
