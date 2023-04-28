@@ -11,10 +11,16 @@ OUTPUT
 */
 
 void main(){
+    int programas[1][8] = {
+        {0, 3, 2, 3, 3, 4, 0, 0 }
+    };
+
+    /*
     int programas[3][8] = { 
     {0, 3, 9, 3, 3, 4, 0, 0 }, //0 +5 
     {1, 0, 2, 4, 1, 2, 0, 0 } ,
     {3, 2, 9, 3, 3, 4, 0, 0 }};   //1 +5
+    */
     
     //estados = NEW --> READY --> RUNNING -->programas[p1][0] == tickBLOCKED -->EXIT
     int tick = -1; // a instancia inicial que comeca em 0
@@ -29,15 +35,23 @@ void main(){
     Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
 
+    /*
+    printf("Instant | ");
+    for(int i = 0; i < npr; i++){
+        printf(" proc%d |", i + 1);
+    }
+    printf("")
+    
+    */
+
     while(tick < 10){
         tick++; 
         printf("start while loop \n"); 
-        printf("%d tick \n", tick);
+        printf("%d tick \n",tick);
 
         for(int p1 = 0; p1 < qpr; p1++){ //verificar se o programa é suposto começar neste tick
             if(programas[p1][0] == tick){ //se sim entao vai para new
                 Enqueue(p1 + 5, new); //New
-                printQueue(new);
             }
         }
 
@@ -96,6 +110,7 @@ void main(){
                            
                 if(Front(blocked) - 5 == i){
                     if(programas[i][cpt] - tick == 0){
+                        programas[i][cpt] = -1;
                         Enqueue(Dequeue(blocked), ready);
                     } 
                 }
@@ -112,6 +127,7 @@ void main(){
         printQueue(ready);
         printf("Blocked \n");
         printQueue(blocked);
-        printf("\n");   
+        printf("\n");
+        printf("----------------------------------------");   
     }//while   
 }//main
