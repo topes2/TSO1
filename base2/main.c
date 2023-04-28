@@ -40,7 +40,7 @@ void main(){
     for(int i = 0; i < npr; i++){
         printf(" proc%d |", i + 1);
     }
-    printf("")
+    printf("\n");
     
     */
 
