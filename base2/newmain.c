@@ -33,34 +33,9 @@ void main(){
     printf("Tick: %d\n", tick);
     int cp = 0; //programa a começar em
 
-    //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
-    for(int i = 0; i + cp < qpr;i++){
-        if(programas[i][0] == tick){
-            Enqueue((i + 5), new);
-        }else if(programas[i][0] < tick && hasValue((i+5), new)) {
-            
-            if(programas[i][1] > 0 && IsEmptyQueue(running)){
-                programas[i][1] = programas[i][1] + tick;
-                Enqueue(Dequeue(new), running); //entrar no running se estiver vaizio e tiver tempo para la correr
-            }else
-                Enqueue(Dequeue(new), ready); //se nao entra no ready
-        }
-    }
-
-    printf("new :\n");
-    printQueue(new);
-    printf("ready: \n");
-    printQueue(ready);
-    printf("Running: \n");
-    printQueue(running);
-    printf("blocked: \n");
-    printQueue(blocked);
-    printf("\n");
-    printf("---------------------------\n");
-
     for(int i = 0; i + cp <= qpr;i++){//loop de atualizar   
         int cpt = 1;
-        if(!hasValue(i,new) && programas[i][0] > tick){ //ver se nao esta ainda no new e se é suppost correr ja
+        if(programas[i][0] < tick){ //ver se nao esta ainda no new e se é suppost correr ja
             
 
             //loop ready
@@ -72,15 +47,19 @@ void main(){
                 if(cpt%2!= 0 && programas[i1][cpt] > 0 && IsEmptyQueue(running)){
                     programas[i1][cpt] = programas[i1][cpt] + tick;
                     Enqueue(Dequeue(ready),running);
-                }else if(programas[i1][cpt] < 0 && cpt%2!= 0 ){
+                }else if(programas[i1][cpt] < 0 && cpt%2 != 0 ){
                     programas[i1][cpt] = -1;
                     programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
-                    Enqueue(Dequeue(ready),blocked);
-                }else if(cpt%2==0){
+                    Enqueue(Dequeue(ready), blocked);
+                }else if(cpt%2 == 0 || (programas[i1][cpt] >= 0 && cpt%2!= 0 )){
                     programas[i1][cpt] = programas[i1][cpt] + tick;
-                    Enqueue(Dequeue(ready),blocked);
+                    Enqueue(Dequeue(ready), blocked);
                 }
             }
+
+
+
+            
 
             if(!IsEmptyQueue(blocked)){
                 int i1 = (Front(blocked) - 5);
@@ -108,6 +87,21 @@ void main(){
             }
         }
     }
+
+    //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
+    for(int i = 0; i + cp < qpr;i++){
+        if(programas[i][0] == tick){
+            Enqueue((i + 5), new);
+        }else if(programas[i][0] < tick && hasValue((i+5), new)) {
+            
+            if(programas[i][1] > 0 && IsEmptyQueue(running)){
+                programas[i][1] = programas[i][1] + tick;
+                Enqueue(Dequeue(new), running); //entrar no running se estiver vazio e tiver tempo para la correr
+            }else
+                Enqueue(Dequeue(new), ready); //se nao, entra no ready
+        }
+    }
+
     printf("new :\n");
     printQueue(new);
     printf("ready: \n");

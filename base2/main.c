@@ -10,6 +10,7 @@ CONDIÇÃO DE FIM
 OUTPUT
 */
 
+/*
 void main(){
     int programas[3][8] = {
         {0, 3, 9, 3, 3, 4, 0, 0 },
@@ -128,3 +129,25 @@ void main(){
         tick++; 
     }//while   
 }//main
+*/
+
+int main(){
+    Queue Q = CreateQueue(3);
+
+    Enqueue(1, Q);
+    Enqueue(5, Q);
+    Enqueue(2, Q);
+
+    printQueue(Q);
+
+    Dequeue(Q);
+
+    printQueue(Q);
+
+    Enqueue(10, Q);
+
+    printQueue(Q);
+
+    printf("%d\n", hasValue(10, Q));
+    return 0;
+}

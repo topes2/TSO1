@@ -10,7 +10,6 @@
 struct QueueRecord
 {
     int Capacity;
-    int size;
     int Front;
     int Rear;
     int *Array;
@@ -51,7 +50,6 @@ Queue CreateQueue(int MaxElements)
         exit(-1);
     }
 
-    Q->size = 0;
     Q->Capacity = MaxElements + 1;
     MakeEmptyQueue(Q);
 
@@ -77,7 +75,7 @@ void DisposeQueue(Queue Q)
 
 int IsEmptyQueue(Queue Q)
 {
-    return Q->size == 0;
+    return Q->Front == Q->Rear;
     
 }
 
@@ -104,7 +102,6 @@ void Enqueue(int X, Queue Q)
         exit(-1);
     }
 
-    Q->size++;
     Q->Array[Q->Rear] = X;
     Q->Rear = successor(Q->Rear, Q);
 }
@@ -128,7 +125,6 @@ int Dequeue(Queue Q)
         exit(-1);
     }
 
-    Q->size--;
     X = Q->Array[Q->Front];
     Q->Front = successor(Q->Front, Q);
 
@@ -136,30 +132,23 @@ int Dequeue(Queue Q)
 }
 
 void printQueue(Queue Q){ 
-    for(int i = 0; i < Q->size; i++){
-        printf("%d ", NextX(Q, i));
+    int i = Q->Front;
+    while (i != Q->Rear) {
+        printf("%d ", Q->Array[i]);
+        i = successor(i, Q);
     }
-        
     printf("\n");
 }
 
 
-int hasValue(int v, Queue Q){
-    for(int i = 0;i < Q->size;i++){
-        if(NextX(Q,i) == v){
+
+int hasValue(int v, Queue Q) {
+    int i = Q->Front;
+    while (i != Q->Rear) {
+        if (Q->Array[i] == v) {
             return 1;
         }
+        i = successor(i, Q);
     }
     return 0;
-
-
-/*
-    //Vamos percorrer o array inteiro da queue e se encontrarmos o id do programa fazemos return true
-    for(int i = Q->Front; i <= Q->size; i++){ 
-        if(Q->Array[i] == v){
-            return 1;
-        }
-    }
-    return 0;
-    */
 }
