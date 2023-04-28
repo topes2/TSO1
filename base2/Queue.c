@@ -94,7 +94,7 @@ int IsFullQueue(Queue Q)
 
 void MakeEmptyQueue(Queue Q)
 {
-    Q->Front = Q->Rear = NULL; //talvez mudar !!!!!!!!!!!!!!!!
+    Q->Front = Q->Rear = 0; 
 }
 
 void Enqueue(int X, Queue Q)
@@ -145,11 +145,21 @@ void printQueue(Queue Q){
 
 
 int hasValue(int v, Queue Q){
+    for(int i = 0;i < Q->size;i++){
+        if(NextX(Q,i) == v){
+            return 1;
+        }
+    }
+    return 0;
+
+
+/*
     //Vamos percorrer o array inteiro da queue e se encontrarmos o id do programa fazemos return true
-    for(int i = 0; i < Q->size; i++){ 
+    for(int i = Q->Front; i <= Q->size; i++){ 
         if(Q->Array[i] == v){
             return 1;
         }
     }
     return 0;
+    */
 }

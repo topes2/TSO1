@@ -11,19 +11,14 @@ OUTPUT
 */
 
 void main(){
-    int programas[1][8] = {
-        {0, 3, 2, 3, 3, 4, 0, 0 }
+    int programas[3][8] = {
+        {0, 3, 9, 3, 3, 4, 0, 0 },
+        {1, 0, 2, 4, 1, 2, 0, 0 },
+        {3, 2, 9, 3, 3, 4, 0, 0 }
     };
-
-    /*
-    int programas[3][8] = { 
-    {0, 3, 9, 3, 3, 4, 0, 0 }, //0 +5 
-    {1, 0, 2, 4, 1, 2, 0, 0 } ,
-    {3, 2, 9, 3, 3, 4, 0, 0 }};   //1 +5
-    */
     
     //estados = NEW --> READY --> RUNNING -->programas[p1][0] == tickBLOCKED -->EXIT
-    int tick = -1; // a instancia inicial que comeca em 0
+    int tick = 0; // a instancia inicial que comeca em 0
     int qpr = sizeof(programas)/sizeof(programas[0]); //quantidade de programas
     int qp = (sizeof(programas)/qpr)/sizeof(int); //aqui temos a quantidade de processos
     int cp = 0; // algo para parar tbh just help me ;-;
@@ -34,20 +29,17 @@ void main(){
     Queue blocked = CreateQueue(qp); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
     Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
-
-    /*
-    printf("Instant | ");
-    for(int i = 0; i < npr; i++){
-        printf(" proc%d |", i + 1);
+    printf("\033[31mInstant |\033[0m");   
+    for(int i = 0; i < qpr; i++){
+        printf("  proc%d  |", i + 1);
     }
     printf("\n");
     
-    */
+    
 
     while(tick < 10){
-        tick++; 
-        printf("start while loop \n"); 
-        printf("%d tick \n",tick);
+        printf("%d       | ", tick);
+        
 
         for(int p1 = 0; p1 < qpr; p1++){ //verificar se o programa é suposto começar neste tick
             if(programas[p1][0] == tick){ //se sim entao vai para new
@@ -69,15 +61,6 @@ void main(){
                     int cptt = cpt; //optimizado para o void
 
                 
-                if(Front(new) - 5 == i){//tudo o que esta o new tem de ir para o ready                  
-                    if(IsEmptyQueue(running) && IsEmptyQueue(ready) && (programas[i][1] != 0)){
-                        programas[i][cpt] = programas[i][cpt] + tick; //adding the tick so that we can subtract it   
-                        Enqueue(Dequeue(new),running);
-                       
-                    }else 
-                        Enqueue(Dequeue(new), ready);
-                }
-                
                 if(Front(running) - 5 == i){
                     if(programas[i][cpt] - tick == 0){
                         programas[i][cpt] = -1;
@@ -86,6 +69,12 @@ void main(){
                     }
                 }
                            
+                if(Front(blocked) - 5 == i){
+                    if(programas[i][cpt] - tick == 0){
+                        programas[i][cpt] = -1;
+                        Enqueue(Dequeue(blocked), ready);
+                    } 
+                }
 
                 if (Front(ready) - 5 == i){
                     int cpt1 = 1;
@@ -107,27 +96,35 @@ void main(){
 
                     }
                 }
-                           
-                if(Front(blocked) - 5 == i){
-                    if(programas[i][cpt] - tick == 0){
-                        programas[i][cpt] = -1;
-                        Enqueue(Dequeue(blocked), ready);
-                    } 
+
+                if(Front(new) - 5 == i){//tudo o que esta o new tem de ir para o ready                  
+                    if(IsEmptyQueue(running) && IsEmptyQueue(ready) && (programas[i][1] != 0)){
+                        programas[i][cpt] = programas[i][cpt] + tick; //adding the tick so that we can subtract it   
+                        Enqueue(Dequeue(new),running);
+                       
+                    }else 
+                        Enqueue(Dequeue(new), ready);
                 }
 
 
 
                 }
             }//for(programas)
-        printf("New \n");
-        printQueue(new);
-        printf("Running \n");
-        printQueue(running);
-        printf("Ready \n");
-        printQueue(ready);
-        printf("Blocked \n");
-        printQueue(blocked);
-        printf("\n");
-        printf("----------------------------------------");   
+        for (int i = 0; i < qpr; i++) {
+            if (hasValue(i + 5, new)) {
+                printf("NEW     | ");
+            } else if (hasValue(i + 5, running)) {
+                printf("RUNNING | ");
+            } else if (hasValue(i + 5, ready)) {
+                printf("READY   | ");
+            } else if (hasValue(i + 5, blocked)) {
+                printf("BLOCKED | ");
+            } else {
+                printf("        | ");
+            }
+                                                           
+        } 
+        printf("\n"); 
+        tick++; 
     }//while   
 }//main
