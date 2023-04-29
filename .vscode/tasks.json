@@ -7,7 +7,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "newmain.c Queue.c funcs.c",
+                "main.c Queue.c funcs.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
@@ -27,7 +27,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "newmain.c ",
+                "main.c ",
                 "Queue.c ",
                 "funcs.c",
                 "-o",
