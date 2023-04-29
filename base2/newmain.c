@@ -23,16 +23,26 @@ void main(){
     int cpt1 = 1; //epa e ver onde foi posto e um glorificado counter
     int work = 0;
     int ir = 0;
+    int nExit = 0;
+    int nzeros;
+    int run;
     
 
     Queue running = CreateQueue(2); //so pode estar 1 programa a correr mas pomos o seguinte no ciclo final do programa a correr
     Queue blocked = CreateQueue(qp); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
     Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
+    
+    printf("Instant |");
+    for(int i = 0; i < qpr; i++){
+        printf("  proc%d  |", i + 1);
+    }
+    printf("\n");
 
     while (tick < 20){ //add a condiçao de saida
+        printf("%d       | ", tick);
+
         work = 0;
-        printf("Tick: %d\n", tick);
         int cp = 0; //programa a começar em
 
         //for(int i = 0; i + cp <= qpr;i++){//loop de atualizar   
@@ -90,7 +100,6 @@ void main(){
             //}
         //}
 
-        printf("Start new\n");
         //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
         for(int i = 0; i + cp < qpr;i++){
             if(  programas[i][0] == tick  ){
@@ -105,16 +114,20 @@ void main(){
             }
         }
 
-        printf("new :\n");
-        printQueue(new);
-        printf("ready: \n");
-        printQueue(ready);
-        printf("Running: \n");
-        printQueue(running);
-        printf("blocked: \n");
-        printQueue(blocked);
+        for (int i = 0; i < qpr; i++) {
+            if (hasValue(i + 5, new)) {
+                printf("NEW     | ");
+            } else if (hasValue(i + 5, running)) {
+                printf("RUNNING | ");
+            } else if (hasValue(i + 5, ready)) {
+                printf("READY   | ");
+            } else if (hasValue(i + 5, blocked)) {
+                printf("BLOCKED | ");
+            } else {
+                printf("        | ");
+            }                                                 
+        } 
         printf("\n");
-        printf("---------------------------");
         tick++;
     }
 

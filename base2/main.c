@@ -30,6 +30,7 @@ void main(){
     Queue blocked = CreateQueue(qp); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
     Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
+    
     printf("\033[31mInstant |\033[0m");   
     for(int i = 0; i < qpr; i++){
         printf("  proc%d  |", i + 1);
