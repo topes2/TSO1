@@ -12,25 +12,16 @@ void main(){
     int programas[3][8] = {
     {1, 3, 1, 2, 2, 4, 0, 0 } ,
     {1, 4, 2, 4, 1, 3, 0, 0 } ,
-    {3, 2, 1, 6, 1, 3, 0, 0 } };
-    
-    /*
-    int programas[3][8] = { 
-        {1, 3, 1, 2, 2, 4, 0, 0},
-        {1, 4, 2, 4, 1, 3, 0, 0 },
-        {3, 2, 1, 6, 1, 3, 0, 0 }
-    };
-
-    */
+    {3, 2, 1, 6, 1, 3, 0, 0 }};
 
 
     int tick = 0; // a instancia inicial que comeca em 0
     int qpr = sizeof(programas)/sizeof(programas[0]); //quantidade de programas
     int qp = (sizeof(programas)/qpr)/sizeof(int); //aqui temos a quantidade de processos
-    int cpt1 = 1; //epa e ver onde foi posto e um glorificado counter
-    int ir = 0;
-    int nPExit = 0, exit = 1;
-    int ends[qpr], end;
+    int cpt1 = 1; //variavel para teste do progrma atualmente a correr o running 
+    int ir = 0; //indice do programam na queue do running 
+    int nPExit = 0, exit = 1; //nPExit - numero de programas que ja sairam, exit - indica se um programa esta para sair
+    int ends[qpr], end; //ends[] - array com os tempos de saida de todos os programas, end - variavel auxiliar para o calculo dos fins
 
     Queue running = CreateQueue(2); //so pode estar 1 programa a correr mas pomos o seguinte no ciclo final do programa a correr
     Queue blocked = CreateQueue(qp); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
@@ -55,15 +46,16 @@ void main(){
     }
     printf("\n");
     
-    while (tick < 34){ //add a condiçao de 
-        
-            printf("%d       | ", tick);
+    while (nPExit < qpr){ //add a condiçao de 
+            if(tick < 10){
+                printf("0");
+            }
+
+            printf("%d      | ", tick);
 
             int cp = 0; //programa a começar em
             int cpt = 1; 
                 
-
-            //loop ready
             if(!IsEmptyQueue(ready)){
                 int i1 = (Front(ready) - 5);
                 while(programas[i1][cpt] == -1){
@@ -82,11 +74,11 @@ void main(){
                 if( (cpt%2!= 0) && (programas[i1][cpt] > 0) && (IsEmptyQueue(running) || (programas[ir][cpt1] - tick == 0))){
                     programas[i1][cpt] = programas[i1][cpt] + tick;
                     Enqueue(Dequeue(ready), running);
-                }else if(programas[i1][cpt] <= 0 && cpt%2 != 0 ){
+                }else if(programas[i1][cpt] <= 0 && cpt%2 != 0 && programas[i1][0] != -1){
                     programas[i1][cpt] = -1;
                     programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
                     Enqueue(Dequeue(ready), blocked);
-                }else if(cpt%2 == 0 || ((programas[i1][cpt] == 0  && cpt%2 != 0))){
+                }else if((cpt%2 == 0 || ((programas[i1][cpt] == 0  && cpt%2 != 0))) && programas[i1][0] != -1){
                     programas[i1][cpt] = programas[i1][cpt] + tick;
                     Enqueue(Dequeue(ready), blocked);
                 }
@@ -115,7 +107,7 @@ void main(){
             iguala o tempo de blocked a -1 para marcar como concluido e envia o seu indice para a queue ready
             */
 
-            if(!IsEmptyQueue(running)){
+            if(!IsEmptyQueue(running)){ 
                 int i1 = (Front(running) - 5);
                 cpt = 1;
                 while(programas[i1][cpt] == -1 && cpt < qp){
@@ -128,6 +120,11 @@ void main(){
                 }
 
             }
+            /*
+            A parte do codigo que testa a queue do running 
+            começa com um teste da front da queue e utiliza a variavel i1 para guardar esse valor
+            
+            */
             
 
             //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
@@ -161,6 +158,8 @@ void main(){
                     nPExit++;
                 }
                 exit = 1;
+            } else {
+                printf("        | ");
             }
         }
 
@@ -173,9 +172,9 @@ void main(){
                 printf("READY   | ");
             } else if (hasValue(i + 5, blocked) && programas[i][0] != -1) {
                 printf("BLOCKED | ");
-            } else {
+            } else if(programas[i][0] != -1){
                 printf("        | ");
-            }                                                 
+            }                                     
         } 
         printf("\n");
         tick++;

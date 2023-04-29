@@ -140,8 +140,6 @@ void printQueue(Queue Q){
     printf("\n");
 }
 
-
-
 int hasValue(int v, Queue Q) {
     int i = Q->Front;
     while (i != Q->Rear) {
