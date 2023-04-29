@@ -58,7 +58,7 @@ void main(){
                 
             if(!IsEmptyQueue(ready)){
                 int i1 = (Front(ready) - 5);
-                while(programas[i1][cpt] == -1){
+                while(programas[i1][cpt] == -1){ //teste de 
                     cpt++;                           //current process timer
                 }
                 if(cpt == 0){
@@ -120,10 +120,12 @@ void main(){
                 }
 
             }
+            
             /*
             A parte do codigo que testa a queue do running 
             começa com um teste da front da queue e utiliza a variavel i1 para guardar esse valor
-            
+            Testa a instancia de saida do indice e compara com o intancia atual e ve se tem de ser dequeued
+            se for dequeued entao vai fazer enqueue do valor de i1 para o blocked
             */
             
 
