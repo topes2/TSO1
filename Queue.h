@@ -13,6 +13,8 @@ int NextX(Queue Q,int n);
 void Enqueue( int X, Queue Q );
 int Dequeue( Queue Q );
 
+int DequeueValue(int v, Queue Q);
+
 //others
 void printQueue(Queue Q);
 int hasValue(int v, Queue Q);

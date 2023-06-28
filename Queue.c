@@ -56,14 +56,6 @@ Queue CreateQueue(int MaxElements)
     return Q;
 }
 
-int NextX(Queue Q,int n){ //adicionei esta funçao para saber quais programas correr
-    if(IsEmptyQueue(Q)){
-        return -1;
-    } else {
-        return (Q->Array[Q->Front]+ n);
-    }
-}
-
 void DisposeQueue(Queue Q)
 {
     if (Q != NULL)
@@ -108,12 +100,8 @@ void Enqueue(int X, Queue Q)
 
 int Front(Queue Q)
 {
-    if(IsEmptyQueue(Q)){
-        //printf("The queue is Empty\n");
-        //exit(-1);
-    } else {
-        return Q->Array[Q->Front];
-    }
+    return Q->Array[Q->Front];
+    
 }
 
 int Dequeue(Queue Q)
@@ -144,6 +132,24 @@ int hasValue(int v, Queue Q) {
     int i = Q->Front;
     while (i != Q->Rear) {
         if (Q->Array[i] == v) {
+            return 1;
+        }
+        i = successor(i, Q);
+    }
+    return 0;
+}
+
+int DequeueValue(int v, Queue Q){
+    int i = Q->Front;
+    while(i !=  Q->Rear){
+        if(Q->Array[i] == v){
+            //Mudar o array da queue e mover tudo uma unidade
+            while(i != Q->Rear){
+                Q->Array[i] = Q->Array[successor(i, Q)];
+
+                i = successor(i, Q);
+            }
+            Q->Rear--;
             return 1;
         }
         i = successor(i, Q);

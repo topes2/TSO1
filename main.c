@@ -13,7 +13,7 @@ int main(){
 
     if(f == NULL){
         printf("Error opening file\n");
-        return -1;
+        return -2;
     }
 
     //ver quantos programas e processos existem
@@ -68,7 +68,7 @@ int main(){
     int ends[nPrograms], end; //ends[] - array com os tempos de saida de todos os programas, end - variavel auxiliar para o calculo dos fins
 
     return 0;
-    
+
     Queue running = CreateQueue(2); //A queue do running so pode ter 1 elemente mas caso seja preciso um outro programa começar a exeucao usamos um tamanho de 2 para
     //puder no teste do running fazer dequeue e nao termos um ciclo onde o running esta vazio
     Queue blocked = CreateQueue(nProcesses); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
@@ -105,48 +105,53 @@ int main(){
                 
         if(!IsEmptyQueue(ready)){
             int i1 = (Front(ready) - 5);
-            while(programas[i1][cpt] == -1){ //encontrar o cpt do programa de front do ready
+            while(programas[i1][cpt] == -2){ //encontrar o cpt do programa de front do ready
                 cpt++;                           //current process timer
-                }
+            }
             if(cpt == 0){ //verificar se o programa é suposto sair de execução
                 Dequeue(ready);
-                }
+            }
             if(!IsEmptyQueue(running)){ //ver se é possivel mandar brevemente o programa atual para o running
                 ir = (Front(running)-5);
-                while(programas[ir][cpt1] == -1){
+                while(programas[ir][cpt1] == -2){
                     cpt1++;                           //current process timer
                 }
             }
 
-            if((cpt%2!= 0) && (programas[i1][cpt] > 0) && (IsEmptyQueue(running) || (programas[ir][cpt1] - tick == 0))){
+            if(programas[i1][cpt] > 0 && (IsEmptyQueue(running) || (programas[ir][cpt1] - tick == 0))){
                 programas[i1][cpt] = programas[i1][cpt] + tick;
+                //Inserir programa no running
                 Enqueue(Dequeue(ready), running);
-                }else if(programas[i1][cpt] <= 0 && cpt%2 != 0 && programas[i1][0] != -1){
-                    programas[i1][cpt] = -1;
-                    programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
-                    Enqueue(Dequeue(ready), blocked);
-                }else if((cpt%2 == 0 || ((programas[i1][cpt] == 0  && cpt%2 != 0))) && programas[i1][0] != -1){
-                    programas[i1][cpt] = programas[i1][cpt] + tick;
-                    Enqueue(Dequeue(ready), blocked);
+                //fazer o unblock
+                //cpt + 1 -> operação unblock com o num do programa
+                if(hasValue(programas[i1][cpt + 1] + 5, blocked)){
+                    Enqueue(DequeueValue(programas[i1][cpt + 1], blocked), ready);
                 }
+                programas[i1][cpt + 1] = -2;
+
+            }else if(programas[i1][cpt] <= 0 && programas[i1][0] != -2){
+                programas[i1][cpt] = -2;
+                programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
+                Enqueue(Dequeue(ready), blocked);
             }
+        }
             /*
             Parte do codigo para testar a queue ready
             começa com um teste para ver se a queue esta vazia ou nao, se nao tiver nao vai testar mais nenhuma condição
             Esta parte é responsavel pela enqueue para a queue do running e se for caso para a queue de block, no primeiro caso vai adicionar ao 
             tempo de execução o numero da instancia que entra na queue running, no caso do tempo de running for 0 vai igual essa tempo de 
-            execução para -1 dado como corrido e faz enqueue para blocked
+            execução para -2 dado como corrido e faz enqueue para blocked
             Se for caso de ir para o block apenas adicona a instancia ao tempo de block para quando é suposto ser dequeue, se possivel.
             */
 
             if(!IsEmptyQueue(blocked)){ //test block
                 int i1 = (Front(blocked) - 5);
                 cpt = 1;
-                while(programas[i1][cpt] == -1){
+                while(programas[i1][cpt] == -2){
                     cpt++;                           //current process timer
                 }
                 if(programas[i1][cpt] - tick <= 0){
-                    programas[i1][cpt] = -1;
+                    programas[i1][cpt] = -2;
                     Enqueue(Dequeue(blocked), ready);
                 }
             }
@@ -156,17 +161,17 @@ int main(){
             começa com um teste se a queue block esta vazia se não estiver procede a encontrar o indice 
             do programa que esta atualmente na front da queue e verifica a instancia que o prorama é suposto sair
             do estado blocked, se for caso que a instancia de saida é a instancia atual entao
-            iguala o tempo de blocked a -1 para marcar como concluido e envia o seu indice para a queue ready
+            iguala o tempo de blocked a -2 para marcar como concluido e envia o seu indice para a queue ready
             */
 
             if(!IsEmptyQueue(running)){ 
                 int i1 = (Front(running) - 5);
                 cpt = 1;
-                while(programas[i1][cpt] == -1 && cpt < nProcesses){
+                while(programas[i1][cpt] == -2 && cpt < nProcesses){
                     cpt++;                           //current process timer
                 }
                 if(programas[i1][cpt] - tick <= 0){
-                    programas[i1][cpt] = -1;
+                    programas[i1][cpt] = -2;
                     programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
                     Enqueue(Dequeue(running), blocked);
                 }
@@ -183,7 +188,7 @@ int main(){
             //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
             for(int i = 0; i + cp < nPrograms;i++){
                 
-                if((programas[i][0] == tick) && (programas[i][0] != -1)){
+                if((programas[i][0] == tick) && (programas[i][0] != -2)){
                     Enqueue((i + 5), new);
                 }else if(programas[i][0] < tick && hasValue((i+5), new)) {
                     if(programas[i][1] > 0 && IsEmptyQueue(running)){
@@ -204,15 +209,15 @@ int main(){
 
         //Exit
         for(int i = 0; i < nPrograms; i++){
-            if(programas[i][0] != -1){
+            if(programas[i][0] != -2){
                 for(int j = 1; j < ends[i]; j++){
-                    if(programas[i][j] != -1){
+                    if(programas[i][j] != -2){
                         exit = 0;
                     }
                 }
                 
                 if(exit){
-                    programas[i][0] = -1;
+                    programas[i][0] = -2;
                     printf("EXIT    | ");
                     nPExit++;
                 }
@@ -224,20 +229,20 @@ int main(){
 
         /*
         Vamos percorrer a lista dos programas todos e vamos verificar se esta na altura de sair. Se todos os processos estiverem
-        a -1 significa que o programa esta pronto a sair, vai indicar no terminal que o programa vai sair e vamos colocar o primeiro indice a -1
+        a -2 significa que o programa esta pronto a sair, vai indicar no terminal que o programa vai sair e vamos colocar o primeiro indice a -2
         para indicar que o programa ja terminou. Se um programa ja tiver terminado vamos imprimir espacos.
         */
         
         for (int i = 0; i < nPrograms; i++) {
-            if (hasValue(i + 5, new) && programas[i][0] != -1) {
+            if (hasValue(i + 5, new) && programas[i][0] != -2) {
                 printf("NEW     | ");
-            } else if (hasValue(i + 5, running) && programas[i][0] != -1) {
+            } else if (hasValue(i + 5, running) && programas[i][0] != -2) {
                 printf("RUN     | ");
-            } else if (hasValue(i + 5, ready) && programas[i][0] != -1) {
+            } else if (hasValue(i + 5, ready) && programas[i][0] != -2) {
                 printf("READY   | ");
-            } else if (hasValue(i + 5, blocked) && programas[i][0] != -1) {
+            } else if (hasValue(i + 5, blocked) && programas[i][0] != -2) {
                 printf("BLOCKED | ");
-            } else if(programas[i][0] != -1){
+            } else if(programas[i][0] != -2){
                 printf("        | ");
             }                                     
         } 
