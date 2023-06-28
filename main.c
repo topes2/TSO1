@@ -62,38 +62,38 @@ int main(){
     fclose(f);
     
     int tick = 0; // a instancia inicial que comeca em 0
-    int qpr = sizeof(programas)/sizeof(programas[0]); //quantidade de programas
-    int qp = (sizeof(programas)/qpr)/sizeof(int); //aqui temos a quantidade de processos
     int cpt1 = 1; //variavel para teste do progroma atualmente a correr o running 
     int ir = 0; //indice do programam na queue do running 
     int nPExit = 0, exit = 1; //nPExit - numero de programas que ja sairam, exit - indica se um programa esta para sair
-    int ends[qpr], end; //ends[] - array com os tempos de saida de todos os programas, end - variavel auxiliar para o calculo dos fins
+    int ends[nPrograms], end; //ends[] - array com os tempos de saida de todos os programas, end - variavel auxiliar para o calculo dos fins
 
+    return 0;
+    
     Queue running = CreateQueue(2); //A queue do running so pode ter 1 elemente mas caso seja preciso um outro programa começar a exeucao usamos um tamanho de 2 para
     //puder no teste do running fazer dequeue e nao termos um ciclo onde o running esta vazio
-    Queue blocked = CreateQueue(qp); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
-    Queue ready = CreateQueue(qp);  //podem estar varios mas so saiem quando o running tiver vazio    
-    Queue new = CreateQueue(qp); // pode haver varios processos a começar ao mesmo tempo
+    Queue blocked = CreateQueue(nProcesses); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
+    Queue ready = CreateQueue(nProcesses);  //podem estar varios mas so saiem quando o running tiver vazio    
+    Queue new = CreateQueue(nProcesses); // pode haver varios processos a começar ao mesmo tempo
 
     //Ver quando os programas acabam
-    for(int i = 0; i < qpr; i++){
+    for(int i = 0; i < nPrograms; i++){
         end = 0;
-        for(int j = qp - 1; j > 0; j--){
+        for(int j = nProcesses - 1; j > 0; j--){
             if(programas[i][j] == 0){
                 end++;
             } else {
-                ends[i] = qp - end;
+                ends[i] = nProcesses - end;
             }
         }
     }
 
     printf("Instant |");
-    for(int i = 0; i < qpr; i++){
+    for(int i = 0; i < nPrograms; i++){
         printf("  proc%d  |", i + 1);
     }
     printf("\n");
     
-    while (nPExit < qpr){ //add a condiçao de 
+    while (nPExit < nPrograms){ //add a condiçao de 
         if(tick < 10){
             printf("0");
         }
@@ -162,7 +162,7 @@ int main(){
             if(!IsEmptyQueue(running)){ 
                 int i1 = (Front(running) - 5);
                 cpt = 1;
-                while(programas[i1][cpt] == -1 && cpt < qp){
+                while(programas[i1][cpt] == -1 && cpt < nProcesses){
                     cpt++;                           //current process timer
                 }
                 if(programas[i1][cpt] - tick <= 0){
@@ -181,7 +181,7 @@ int main(){
             
 
             //ciclo new, objetivos é fazer enqueue e depois por no ready ou no running
-            for(int i = 0; i + cp < qpr;i++){
+            for(int i = 0; i + cp < nPrograms;i++){
                 
                 if((programas[i][0] == tick) && (programas[i][0] != -1)){
                     Enqueue((i + 5), new);
@@ -203,7 +203,7 @@ int main(){
         
 
         //Exit
-        for(int i = 0; i < qpr; i++){
+        for(int i = 0; i < nPrograms; i++){
             if(programas[i][0] != -1){
                 for(int j = 1; j < ends[i]; j++){
                     if(programas[i][j] != -1){
@@ -228,7 +228,7 @@ int main(){
         para indicar que o programa ja terminou. Se um programa ja tiver terminado vamos imprimir espacos.
         */
         
-        for (int i = 0; i < qpr; i++) {
+        for (int i = 0; i < nPrograms; i++) {
             if (hasValue(i + 5, new) && programas[i][0] != -1) {
                 printf("NEW     | ");
             } else if (hasValue(i + 5, running) && programas[i][0] != -1) {
