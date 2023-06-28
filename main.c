@@ -1,14 +1,66 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "Queue.h"
 
-void main(){
-   int programas[3][8] = {
-    {1, 3, 1, 2, 2, 4, 0, 0 } ,
-    {1, 4, 2, 4, 1, 3, 0, 0 } ,
-    {3, 2, 1, 6, 1, 3, 0, 0 } };
+int main(){
+    //Read content from file
+    int nPrograms = 0, nProcesses = 0;
+    char line[100];
+    int n_programs = 0;
 
+    FILE *f = fopen("programs.txt", "r");
 
+    if(f == NULL){
+        printf("Error opening file\n");
+        return -1;
+    }
+
+    //ver quantos programas e processos existem
+    //ler a primeira linha para saber o número de processos
+    
+
+    if(fgets(line, sizeof(line), f) == NULL){
+        //arquivo não tem conteudo
+        printf("No content in file\n");
+        return 0;
+    }
+    nPrograms++;
+
+    int pos = strcspn(line, "\n");
+    line[pos] = '\0';
+    
+    for (int i = 0; i < strlen(line); i++){
+        if(line[i] == ' '){
+            nProcesses++;
+        }
+    }
+    nProcesses++; //para o ultimo numero
+    
+    //ver o número de programas
+    while(fgets(line, sizeof(line), f) != NULL){
+        nPrograms++;
+    }
+
+    //voltar o ponteiro
+    rewind(f);
+
+    //criação da matriz
+    int programas[nPrograms][nProcesses];
+
+    //completar a matriz
+    
+    for(int i = 0; i < nPrograms; i++){
+        for(int j = 0; j < nProcesses; j++){
+            if(fscanf(f, "%d", &programas[i][j]) != 1){
+                printf("error\n");
+            }
+
+        }
+    }
+
+    fclose(f);
+    
     int tick = 0; // a instancia inicial que comeca em 0
     int qpr = sizeof(programas)/sizeof(programas[0]); //quantidade de programas
     int qp = (sizeof(programas)/qpr)/sizeof(int); //aqui temos a quantidade de processos
@@ -197,4 +249,6 @@ void main(){
         */
         tick++; //mudar o tick
     }
+    
+    return 0;
 }
