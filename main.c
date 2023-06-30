@@ -101,15 +101,38 @@ int main(){
     }
     printf("\n");
 
+    int u = 0;
+
     while (nPExit < nPrograms){ //add a condiçao de 
-        if(tick == 4){
-            int m = 1;
-        }
         if(tick < 10){
             printf("0");
         }
 
         printf("%d      | ", tick);
+
+        /*
+            Parte do codigo para testar a queue ready
+            começa com um teste para ver se a queue esta vazia ou nao, se nao tiver nao vai testar mais nenhuma condição
+            Esta parte é responsavel pela enqueue para a queue do running e se for caso para a queue de block, no primeiro caso vai adicionar ao 
+            tempo de execução o numero da instancia que entra na queue running, no caso do tempo de running for 0 vai igual essa tempo de 
+            execução para -2 dado como corrido e faz enqueue para blocked
+            Se for caso de ir para o block apenas adicona a instancia ao tempo de block para quando é suposto ser dequeue, se possivel.
+            */
+        int cpt = 1; 
+
+        if(!IsEmptyQueue(blocked)){
+            int i1 = (Front(blocked) - 5);
+            cpt = 1;
+
+            while(programas[i1][cpt] == -2){
+                cpt++;                           //current process timer
+            }
+
+            if(programas[i1][cpt] - tick <= 0){
+                programas[i1][cpt] = -2;
+                Enqueue(Dequeue(blocked), ready);
+            }
+        }
 
         //Unblock
         if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
@@ -123,33 +146,8 @@ int main(){
                 cpt++;
             }
             programas[unblock.unblock - 5][cpt] = -2;
+                u = 1;
         }
-
-        /*
-            Parte do codigo para testar a queue ready
-            começa com um teste para ver se a queue esta vazia ou nao, se nao tiver nao vai testar mais nenhuma condição
-            Esta parte é responsavel pela enqueue para a queue do running e se for caso para a queue de block, no primeiro caso vai adicionar ao 
-            tempo de execução o numero da instancia que entra na queue running, no caso do tempo de running for 0 vai igual essa tempo de 
-            execução para -2 dado como corrido e faz enqueue para blocked
-            Se for caso de ir para o block apenas adicona a instancia ao tempo de block para quando é suposto ser dequeue, se possivel.
-            */
-        int cpt = 1; 
-
-            if(!IsEmptyQueue(blocked)){
-                int i1 = (Front(blocked) - 5);
-                cpt = 1;
-
-                while(programas[i1][cpt] == -2){
-                    cpt++;                           //current process timer
-                }
-
-                if(programas[i1][cpt] - tick <= 0){
-                    programas[i1][cpt] = -2;
-                    Enqueue(Dequeue(blocked), ready);
-                }
-            }
-
-
 
         int cp = 0; //programa a começar em
         cpt = 1; 
@@ -176,7 +174,8 @@ int main(){
                 //unblock
                     unblock.unblock = programas[i1][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
                     unblock.tick = tick;
-                }
+                } 
+
                 programas[i1][cpt + 1] = -2;
             }else if(programas[i1][cpt] <= 0 && programas[i1][0] != -2){
                 programas[i1][cpt] = -2;
@@ -228,8 +227,9 @@ int main(){
                         //unblock
                         if(!hasValue(programas[i][cpt + 1] + 4, ready)){
                             unblock.unblock = programas[i][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
-                            unblock.tick = tick;
-                        }
+                            unblock.tick = tick;  
+                        } 
+
                         programas[i][cpt + 1] = -2;
                     }else {
                         Enqueue(Dequeue(new), ready); //se nao, entra no ready
@@ -256,7 +256,7 @@ int main(){
                     programas[i][0] = -2;
                     printf("EXIT           | ");
                     nPExit++;
-                }
+                } 
                 exit = 1;
             }else{
                 printf("               | ");
@@ -274,10 +274,11 @@ int main(){
                 printf("NEW            | ");
             } else if (hasValue(i + 5, running) && programas[i][0] != -2) {
                 printf("RUN            | ");
-            } else if (unblock.unblock == i + 5 && unblock.tick + 1 == tick){
+            } else if (unblock.unblock == i + 5 && unblock.tick + 1 == tick && u){
                 printf("READY (UNBLOCK)| ");
                 unblock.unblock = 3;
                 unblock.tick = 0;
+                u = 0;
             } else if (hasValue(i + 5, ready) && programas[i][0] != -2) {
                 printf("READY          | ");
             } else if (hasValue(i + 5, blocked) && programas[i][0] != -2) {
@@ -287,10 +288,6 @@ int main(){
             }                                     
         } 
         printf("\n");
-
-        if(tick == 7){
-            int m = 0;
-        }
 
         /*
         Esta parte e o print de todos os estados, vamos estar a verificar se o programa esta em certa fila e se estiver vamos indicar no terminal
@@ -303,14 +300,3 @@ int main(){
 
     return 0;
 }
-
-/*
-0 -2 -2 -2 -2 -2 -2 -2 0 0
-0 -2 -2 -2 -2 -2 -2 -2 0 0 
-1 -2 -2 -2 -2 -2 -2 -2 0 0 
-2 -2 -2 -2 -2 -2 -2 -2 0 0 
-2 -2 -2 -2 -2 -2 -2 -2 0 0 
-3 -2 -2 -2 -2 -2 -2 -2 0 0 
-4 -2 -2 -2 -2 -2 4 3 0 0 
-5 -2 -2 -2 -2 -2 3 5 0 0 
-*/
