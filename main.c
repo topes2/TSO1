@@ -108,20 +108,6 @@ int main(){
 
         printf("%d      | ", tick);
 
-        //Unblock
-        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
-            //retirar da queue blocked e adicionar à queue ready
-            DequeueValue(unblock.unblock, blocked);
-            Enqueue(unblock.unblock, ready);
-            
-            //indicar que já saimos
-            int cpt = 1;
-            while(programas[unblock.unblock - 5][cpt] == -2){
-                cpt++;
-            }
-            programas[unblock.unblock - 5][cpt] = -2;
-        }
-
 
         /*
             Parte do codigo para testar a queue ready
@@ -259,6 +245,20 @@ int main(){
             }else{
                 printf("               | ");
             }
+        }
+
+        //Unblock
+        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
+            //retirar da queue blocked e adicionar à queue ready
+            DequeueValue(unblock.unblock, blocked);
+            Enqueue(unblock.unblock, ready);
+            
+            //indicar que já saimos
+            int cpt = 1;
+            while(programas[unblock.unblock - 5][cpt] == -2){
+                cpt++;
+            }
+            programas[unblock.unblock - 5][cpt] = -2;
         }
 
         /*
