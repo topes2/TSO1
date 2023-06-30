@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include "Queue.h"
 
+struct Unblocked {
+    int tick;
+    int unblock;
+};
+
 int main(){
     //Read content from file
     int nPrograms = 0, nProcesses = 0;
@@ -67,14 +72,16 @@ int main(){
     int nPExit = 0, exit = 1; //nPExit - numero de programas que ja sairam, exit - indica se um programa esta para sair
     int ends[nPrograms], end; //ends[] - array com os tempos de saida de todos os programas, end - variavel auxiliar para o calculo dos fins
 
-    return 0;
-
     Queue running = CreateQueue(2); //A queue do running so pode ter 1 elemente mas caso seja preciso um outro programa começar a exeucao usamos um tamanho de 2 para
     //puder no teste do running fazer dequeue e nao termos um ciclo onde o running esta vazio
     Queue blocked = CreateQueue(nProcesses); //blocked podem estar muitos mas so sai quando o primeiro estiver a 0
     Queue ready = CreateQueue(nProcesses);  //podem estar varios mas so saiem quando o running tiver vazio    
     Queue new = CreateQueue(nProcesses); // pode haver varios processos a começar ao mesmo tempo
 
+    Queue unBlock = CreateQueue(nPrograms);
+
+    struct Unblocked unblock;     //Variavél que nos indica se existe unblock ou não
+    unblock.unblock = 3; //começamos com 3 porque ao fazer -5 = -2
     //Ver quando os programas acabam
     for(int i = 0; i < nPrograms; i++){
         end = 0;
@@ -89,16 +96,30 @@ int main(){
 
     printf("Instant |");
     for(int i = 0; i < nPrograms; i++){
-        printf("  proc%d  |", i + 1);
+        printf("  proc%d         |", i + 1);
     }
     printf("\n");
-    
+
     while (nPExit < nPrograms){ //add a condiçao de 
         if(tick < 10){
             printf("0");
         }
 
         printf("%d      | ", tick);
+
+        //Unblock
+        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
+            //retirar da queue blocked e adicionar à queue ready
+            DequeueValue(unblock.unblock, blocked);
+            Enqueue(unblock.unblock, ready);
+            
+            //indicar que já saimos
+            int cpt = 1;
+            while(programas[unblock.unblock - 5][cpt] == -2){
+                cpt++;
+            }
+            programas[unblock.unblock - 5][cpt] = -2;
+        }
 
         int cp = 0; //programa a começar em
         int cpt = 1; 
@@ -108,9 +129,7 @@ int main(){
             while(programas[i1][cpt] == -2){ //encontrar o cpt do programa de front do ready
                 cpt++;                           //current process timer
             }
-            if(cpt == 0){ //verificar se o programa é suposto sair de execução
-                Dequeue(ready);
-            }
+            
             if(!IsEmptyQueue(running)){ //ver se é possivel mandar brevemente o programa atual para o running
                 ir = (Front(running)-5);
                 while(programas[ir][cpt1] == -2){
@@ -122,13 +141,13 @@ int main(){
                 programas[i1][cpt] = programas[i1][cpt] + tick;
                 //Inserir programa no running
                 Enqueue(Dequeue(ready), running);
-                //fazer o unblock
-                //cpt + 1 -> operação unblock com o num do programa
-                if(hasValue(programas[i1][cpt + 1] + 5, blocked)){
-                    Enqueue(DequeueValue(programas[i1][cpt + 1], blocked), ready);
+
+                if(!hasValue(programas[i1][cpt + 1] + 4, ready)){
+                //unblock
+                    unblock.unblock = programas[i1][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
+                    unblock.tick = tick;
                 }
                 programas[i1][cpt + 1] = -2;
-
             }else if(programas[i1][cpt] <= 0 && programas[i1][0] != -2){
                 programas[i1][cpt] = -2;
                 programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
@@ -147,9 +166,11 @@ int main(){
             if(!IsEmptyQueue(blocked)){ //test block
                 int i1 = (Front(blocked) - 5);
                 cpt = 1;
+
                 while(programas[i1][cpt] == -2){
                     cpt++;                           //current process timer
                 }
+
                 if(programas[i1][cpt] - tick <= 0){
                     programas[i1][cpt] = -2;
                     Enqueue(Dequeue(blocked), ready);
@@ -164,15 +185,17 @@ int main(){
             iguala o tempo de blocked a -2 para marcar como concluido e envia o seu indice para a queue ready
             */
 
-            if(!IsEmptyQueue(running)){ 
+            if(!IsEmptyQueue(running)){
                 int i1 = (Front(running) - 5);
                 cpt = 1;
                 while(programas[i1][cpt] == -2 && cpt < nProcesses){
                     cpt++;                           //current process timer
                 }
+
+                //run
                 if(programas[i1][cpt] - tick <= 0){
                     programas[i1][cpt] = -2;
-                    programas[i1][cpt+1] = programas[i1][cpt+1] + tick;
+                    programas[i1][cpt+2] = programas[i1][cpt+2] + tick;
                     Enqueue(Dequeue(running), blocked);
                 }
             }
@@ -194,6 +217,12 @@ int main(){
                     if(programas[i][1] > 0 && IsEmptyQueue(running)){
                         programas[i][1] = programas[i][1] + tick;
                         Enqueue(Dequeue(new), running); //entrar no running se estiver vazio e tiver tempo para la correr
+                        //unblock
+                        if(!hasValue(programas[i][cpt + 1] + 4, ready)){
+                            unblock.unblock = programas[i][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
+                            unblock.tick = tick;
+                        }
+                        programas[i][cpt + 1] = -2;
                     }else {
                         Enqueue(Dequeue(new), ready); //se nao, entra no ready
                     }
@@ -218,12 +247,12 @@ int main(){
                 
                 if(exit){
                     programas[i][0] = -2;
-                    printf("EXIT    | ");
+                    printf("EXIT           | ");
                     nPExit++;
                 }
                 exit = 1;
             }else{
-                printf("        | ");
+                printf("               | ");
             }
         }
 
@@ -235,15 +264,19 @@ int main(){
         
         for (int i = 0; i < nPrograms; i++) {
             if (hasValue(i + 5, new) && programas[i][0] != -2) {
-                printf("NEW     | ");
+                printf("NEW            | ");
             } else if (hasValue(i + 5, running) && programas[i][0] != -2) {
-                printf("RUN     | ");
+                printf("RUN            | ");
+            } else if (unblock.unblock == i + 5 && unblock.tick + 1 == tick){
+                printf("READY (UNBLOCK)| ");
+                unblock.unblock = 3;
+                unblock.tick = 0;
             } else if (hasValue(i + 5, ready) && programas[i][0] != -2) {
-                printf("READY   | ");
+                printf("READY          | ");
             } else if (hasValue(i + 5, blocked) && programas[i][0] != -2) {
-                printf("BLOCKED | ");
+                printf("BLOCKED        | ");
             } else if(programas[i][0] != -2){
-                printf("        | ");
+                printf("               | ");
             }                                     
         } 
         printf("\n");
@@ -253,6 +286,9 @@ int main(){
         onde o programa se encontra.
         */
         tick++; //mudar o tick
+        if(tick == 27){
+            return 0;
+        }
     }
     
     return 0;
