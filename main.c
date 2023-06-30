@@ -3,15 +3,10 @@
 #include <stdlib.h>
 #include "Queue.h"
 
-struct Unblocked {
-    int tick;
-    int unblock;
-};
-
 int main(){
     //Read content from file
     int nPrograms = 0, nProcesses = 0;
-    char line[100];
+    char line[200];
     int n_programs = 0;
 
     FILE *f = fopen("programs.txt", "r");
@@ -80,9 +75,7 @@ int main(){
 
     Queue unBlock = CreateQueue(nPrograms);
 
-    struct Unblocked unblock;     //Variavél que nos indica se existe unblock ou não
-    unblock.unblock = 3; //começamos com 3 porque ao fazer -5 = -2
-    
+    int unblock = 3;//começamos com 3 porque ao fazer -5 = -2
     //Ver quando os programas acabam
     for(int i = 0; i < nPrograms; i++){
         end = 0;
@@ -134,19 +127,19 @@ int main(){
             }
         }
 
-        //Unblock
-        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
+        //instrução Unblock
+        if(unblock - 5 != -2 && hasValue(unblock, blocked)){
             //retirar da queue blocked e adicionar à queue ready
-            DequeueValue(unblock.unblock, blocked);
-            Enqueue(unblock.unblock, ready);
+            dequeueValue(unblock, blocked);
+            Enqueue(unblock, ready);
             
             //indicar que já saimos
             int cpt = 1;
-            while(programas[unblock.unblock - 5][cpt] == -2){
+            while(programas[unblock - 5][cpt] == -2){
                 cpt++;
             }
-            programas[unblock.unblock - 5][cpt] = -2;
-                u = 1;
+            programas[unblock - 5][cpt] = -2;
+            u = 1;
         }
 
         int cp = 0; //programa a começar em
@@ -172,8 +165,7 @@ int main(){
 
                 if(!hasValue(programas[i1][cpt + 1] + 4, ready)){
                 //unblock
-                    unblock.unblock = programas[i1][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
-                    unblock.tick = tick;
+                    unblock = programas[i1][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
                 } 
 
                 programas[i1][cpt + 1] = -2;
@@ -226,8 +218,7 @@ int main(){
                         Enqueue(Dequeue(new), running); //entrar no running se estiver vazio e tiver tempo para la correr
                         //unblock
                         if(!hasValue(programas[i][cpt + 1] + 4, ready)){
-                            unblock.unblock = programas[i][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
-                            unblock.tick = tick;  
+                            unblock = programas[i][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
                         } 
 
                         programas[i][cpt + 1] = -2;
@@ -274,10 +265,9 @@ int main(){
                 printf("NEW            | ");
             } else if (hasValue(i + 5, running) && programas[i][0] != -2) {
                 printf("RUN            | ");
-            } else if (unblock.unblock == i + 5 && unblock.tick + 1 == tick && u){
+            } else if (unblock == i + 5  && u){
                 printf("READY (UNBLOCK)| ");
-                unblock.unblock = 3;
-                unblock.tick = 0;
+                unblock = 3; // reset
                 u = 0;
             } else if (hasValue(i + 5, ready) && programas[i][0] != -2) {
                 printf("READY          | ");

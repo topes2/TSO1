@@ -139,7 +139,7 @@ int hasValue(int v, Queue Q) {
     return 0;
 }
 
-int DequeueValue(int v, Queue Q){
+int dequeueValue(int v, Queue Q){
     int i = Q->Front;
     while(i !=  Q->Rear){
         if(Q->Array[i] == v){
