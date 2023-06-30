@@ -102,12 +102,28 @@ int main(){
     printf("\n");
 
     while (nPExit < nPrograms){ //add a condiçao de 
+        if(tick == 4){
+            int m = 1;
+        }
         if(tick < 10){
             printf("0");
         }
 
         printf("%d      | ", tick);
 
+        //Unblock
+        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
+            //retirar da queue blocked e adicionar à queue ready
+            DequeueValue(unblock.unblock, blocked);
+            Enqueue(unblock.unblock, ready);
+            
+            //indicar que já saimos
+            int cpt = 1;
+            while(programas[unblock.unblock - 5][cpt] == -2){
+                cpt++;
+            }
+            programas[unblock.unblock - 5][cpt] = -2;
+        }
 
         /*
             Parte do codigo para testar a queue ready
@@ -156,7 +172,7 @@ int main(){
                 //Inserir programa no running
                 Enqueue(Dequeue(ready), running);
 
-                if(!hasValue(programas[i1][cpt + 1] + 4, ready) && hasValue(programas[i1][cpt + 1] + 4, blocked)){
+                if(!hasValue(programas[i1][cpt + 1] + 4, ready)){
                 //unblock
                     unblock.unblock = programas[i1][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
                     unblock.tick = tick;
@@ -210,7 +226,7 @@ int main(){
                         programas[i][1] = programas[i][1] + tick;
                         Enqueue(Dequeue(new), running); //entrar no running se estiver vazio e tiver tempo para la correr
                         //unblock
-                        if(!hasValue(programas[i][cpt + 1] + 4, ready) && hasValue(programas[i][cpt + 1] + 4, blocked)){
+                        if(!hasValue(programas[i][cpt + 1] + 4, ready)){
                             unblock.unblock = programas[i][cpt + 1] + 4; //+4 porque o programa 1 corresponde ao 0 ou seja 5 - 1
                             unblock.tick = tick;
                         }
@@ -245,20 +261,6 @@ int main(){
             }else{
                 printf("               | ");
             }
-        }
-
-        //Unblock
-        if(unblock.unblock - 5 != -2 && hasValue(unblock.unblock, blocked) && tick == unblock.tick + 1){
-            //retirar da queue blocked e adicionar à queue ready
-            DequeueValue(unblock.unblock, blocked);
-            Enqueue(unblock.unblock, ready);
-            
-            //indicar que já saimos
-            int cpt = 1;
-            while(programas[unblock.unblock - 5][cpt] == -2){
-                cpt++;
-            }
-            programas[unblock.unblock - 5][cpt] = -2;
         }
 
         /*
