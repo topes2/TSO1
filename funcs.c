@@ -6,6 +6,10 @@
 #include "funcs.h"
 
 //files
+
+/*
+Esta função obtem quantos programas e quantos processos existem no ficheiro para processar.
+*/
 void getsizesFile(char *filename, int *numPrograms, int *numProcesses){
     char line[200];
 
@@ -43,6 +47,9 @@ void getsizesFile(char *filename, int *numPrograms, int *numProcesses){
     return;
 }
 
+/*
+Esta função vai voltar a abrir o ficheiro e copiar o conteudo para a matriz dada como argumento. Faz return 1 se copiou tudo com sucesso.
+*/
 int completeMat(char *filename, int **programs, int *numPrograms, int *numProcesses){
 
     FILE *f = fopen("programs.txt", "r");
@@ -56,6 +63,7 @@ int completeMat(char *filename, int **programs, int *numPrograms, int *numProces
         for(int j = 0; j < *numProcesses; j++){
             if(fscanf(f, "%d", &programs[i][j]) != 1){
                 printf("error\n");
+                exit(-1);
             }
 
         }
@@ -70,7 +78,7 @@ int completeMat(char *filename, int **programs, int *numPrograms, int *numProces
 //Blocked
 /*
 Este estado começa por verificar se a queue está vazia. Caso não esteja vamos obter o programa que está na frente da queue e verifica
-se o programa é suposto sair no instante ou se já devia ter saido, e se for o caso retira o programa da queue blocked e adiciona-o á queue ready
+se o programa é suposto sair no instante ou se já devia ter saido, e se for o caso retira o programa da queue blocked e adiciona-o á queue ready.
 */
 void blockedState(Queue ready, Queue blocked, int **programas, int tick){
     int cpt;
@@ -241,6 +249,10 @@ void exitState(int **programas,int *ends, int nPrograms, int *nPExit){
 }
 
 //other
+/*
+Esta função verifica quando os programas devem terminar. Ao achar o número 0 indica que um programa terminou, vai guardar o indice em que o programa 
+termina no array ends
+*/
 void endPrograms(int *ends, int **programs, int nPrograms, int nProcesses){
     int end;
 
