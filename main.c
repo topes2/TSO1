@@ -1,65 +1,27 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "Queue.h"
+#include "funcs.h"
+
+#define FILENAME "programs.txt"
 
 int main(){
     //Read content from file
     int nPrograms = 0, nProcesses = 0;
-    char line[200];
-    int n_programs = 0;
-
-    FILE *f = fopen("programs.txt", "r");
-
-    if(f == NULL){
-        printf("Error opening file\n");
-        return -2;
-    }
-
-    //ver quantos programas e processos existem
-    //ler a primeira linha para saber o número de processos
     
-
-    if(fgets(line, sizeof(line), f) == NULL){
-        //arquivo não tem conteudo
-        printf("No content in file\n");
-        return 0;
-    }
-    nPrograms++;
-
-    int pos = strcspn(line, "\n");
-    line[pos] = '\0';
-    
-    for (int i = 0; i < strlen(line); i++){
-        if(line[i] == ' '){
-            nProcesses++;
-        }
-    }
-    nProcesses++; //para o ultimo numero
-    
-    //ver o número de programas
-    while(fgets(line, sizeof(line), f) != NULL){
-        nPrograms++;
-    }
-
-    //voltar o ponteiro
-    rewind(f);
+    //get sizes(num programs and processes)
+    getsizesFile(FILENAME, &nPrograms, &nProcesses);
 
     //criação da matriz
-    int programas[nPrograms][nProcesses];
-
-    //completar a matriz
-    
-    for(int i = 0; i < nPrograms; i++){
-        for(int j = 0; j < nProcesses; j++){
-            if(fscanf(f, "%d", &programas[i][j]) != 1){
-                printf("error\n");
-            }
-
-        }
+    int** programas = malloc(nPrograms * sizeof(int*));
+    for (int i = 0; i < nPrograms; i++) {
+        programas[i] = malloc(nProcesses * sizeof(int));
     }
 
-    fclose(f);
+    //completar a matriz
+    completeMat(FILENAME, programas, &nPrograms, &nProcesses);
     
     int tick = 0; // a instancia inicial que comeca em 0
     int cpt1 = 1; //variavel para teste do progroma atualmente a correr o running 

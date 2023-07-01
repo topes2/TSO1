@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "Queue.h"
 
-#define MinQueueSize (2)
+#define MinQueueSize (1)
 
 #define True 1
 #define False 0
